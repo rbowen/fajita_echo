@@ -1,0 +1,14 @@
+GetMenu What's for dinner
+GetMenu What's on the menu
+GetVegetarian for a vegetarian option
+GetVegetarian for a vegetarian dinner
+GetMenu I'm hungry
+
+AddMenu add {menu|Menu} to the menu
+AddMenu add {menu two|Menu} to the menu
+AddMenu add {menu two three|Menu} to the menu
+
+AddMenu put {menu|Menu} on the menu
+AddMenu put {menu two|Menu} on the menu
+AddMenu put {menu two three|Menu} on the menu
+

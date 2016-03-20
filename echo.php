@@ -4,23 +4,14 @@ $data = file_get_contents("php://input");
 $query = json_decode( $data );
 # error_log( print_r( $query, 1 ) );
 
-$meat = array(
-    'sun dried tomato chicken',
-    'steak',
-    'bangers and mash',
-    'shepherd\'s pie',
-    'chicken etoufee',
-    'tandoori chicken',
-    'ethiopian',
+$me = array(
+    'version' => '0.1',
+    'name'    => 'Fajita'
 );
 
-$vegetarian = array(
-    'grilled cheese and soup',
-    'monkeys and cheese',
-    'spaghetti',
-    'enchiladas',
-    'ramen',
-);
+$guid = '179cac3e-f062-48e6-ba41-109a728d01fe';
+$userid = 'AERVD6MDLOMTUHVRFQ2JMWVPXZSHPHCNYUCOEEXB43QOFQL22M36Q';
+$help = "Hi. .  I'm Fajita.  .  Ask me what's for dinner.";
 
 $verb = array(
     'Have',
@@ -30,36 +21,66 @@ $verb = array(
     'You could have',
 );
 
-
-if ( $query->request->intent->name == "GetVegetarian" ) {
-    $menu = $vegetarian;
-} else {
-    $menu = array_merge( $meat, $vegetarian );
+try {
+    $db = new PDO('mysql:host=localhost;dbname=fajita;charset=utf8mb4', 'fajita', 'fajita');
+}
+catch(PDOException $e) {
+    error_log( $e->getMessage() ) ;
 }
 
-$meal = $menu[ array_rand( $menu ) ];
+include('../validate-echo-request-php/valid_request.php');
+$valid = validate_request( $guid, $userid );
 
-$recommend = $verb[ array_rand( $verb )] . ' '
-           . $meal . ' for dinner';
+if ( ! $valid['success'] )  {
+    error_log( 'Request failed: ' . $valid['message'] );
+    die();
+}
 
-$response = array (
-   "version" => '1.0',
-    'response' => array (
-        'outputSpeech' => array (
-            'type' => 'PlainText',
-            'text' => $recommend
-        ),
+$vegetarian = 0;
 
-         'card' => array (
-               'type' => 'Simple',
-               'title' => 'Fajita',
-               'content' => 'Fajita recommends ' . $meal . ' for dinner.'
-         ),
+if ( $query ) {
+    $action = $query->request->intent->name;
 
-        'shouldEndSession' => 'true'
-    ),
-);
+    if ( $action == "GetVegetarian" ) {
+        $vegetarian = 1;
+    }
 
+    # Get a suggestion for dinner
+    if ( $action == 'GetVegetarian' || $action == 'GetMenu' ) {
+
+        $dbq = "SELECT name FROM menu ";
+        if ( $vegetarian ) {
+            $dbq = $dbq . " WHERE vegetarian IS TRUE ";
+        }
+        $dbq = $dbq . " ORDER BY RAND() LIMIT 0,1 ";
+
+        $sth = $db->prepare( $dbq );
+        $sth->execute();
+        $result = $sth->fetch();
+        $meal = $result['name'];
+
+        $recommend = $verb[ array_rand( $verb )] . ' '
+                   . $meal . ' for dinner';
+
+        $response = $recommend;
+    }
+
+    # Add an item to the menu
+    elseif ( $action == 'AddMenu' ) {
+    }
+
+    # Help
+    elseif ( $action == 'AMAZON.HelpIntent' ) {
+        sendresponse( $help, $me );
+    }
+
+}
+
+else {
+    $response = $help;
+}
+
+sendresponse( $response, $me );
 echo json_encode($response);
 
 ?>
