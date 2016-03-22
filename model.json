@@ -3,11 +3,20 @@
     {"intent": "GetMenu"},
     {"intent": "GetVegetarian"},
     { "intent": "AddMenu",
+     
+     "slots":  [ {
+       "name": "Menu",
+       "type": "AMAZON.LITERAL"
+     } ]
+    }   ,
+    { "intent": "GetRecipe",
       "slots": [
+        {
         "name": "Menu",
         "type": "AMAZON.LITERAL"
+        }
       ]
-        
+         
     },
     { "intent": "AMAZON.HelpIntent" }
   ]

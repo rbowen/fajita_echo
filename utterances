@@ -1,3 +1,4 @@
+
 GetMenu What's for dinner
 GetMenu What's on the menu
 GetVegetarian for a vegetarian option
@@ -11,4 +12,14 @@ AddMenu add {menu two three|Menu} to the menu
 AddMenu put {menu|Menu} on the menu
 AddMenu put {menu two|Menu} on the menu
 AddMenu put {menu two three|Menu} on the menu
+
+GetRecipe what's in {menu|Menu}
+GetRecipe what's in {menu two|Menu}
+GetRecipe what's in {menu two three|Menu}
+GetRecipe what's in {menu two three four|Menu}
+
+GetRecipe what's the recipe for {menu|Menu}
+GetRecipe what's the recipe for {menu two|Menu}
+GetRecipe what's the recipe for {menu two three|Menu}
+GetRecipe what's the recipe for {menu two three four|Menu}
 

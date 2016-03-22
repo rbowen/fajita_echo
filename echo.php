@@ -2,7 +2,7 @@
 
 $data = file_get_contents("php://input");
 $query = json_decode( $data );
-# error_log( print_r( $query, 1 ) );
+error_log( print_r( $query, 1 ) );
 
 $me = array(
     'version' => '0.2',
@@ -47,8 +47,14 @@ if ( $query ) {
         $response = addmenu( $db, $query );
     }
 
+    # Read me the recipe
+    elseif ( $action == 'GetRecipe' ) {
+        $response = getrecipe( $db, $query );
+    }
+
     # Help
-    elseif ( $action == 'AMAZON.HelpIntent' ) {
+    else {
+        # if ( $action == 'AMAZON.HelpIntent' ) {
         $response = $help;
     }
 
@@ -113,6 +119,26 @@ function addmenu( $db, $query ) {
 
     $response = 'I added ' . $menu . ' to your menu options.';
     return( $response );
+}
+
+/*
+    Read me the recipe
+
+    getrecipe( $db, $query );
+*/
+function getrecipe( $db, $query ) {
+    $menu = $query->request->intent->slots->Menu->value;
+
+    $sth = $db->prepare( "SELECT name, recipe
+        FROM menu
+        WHERE name = ?" );
+    $sth->execute( array( $menu ));
+    $result = $sth->fetch();
+    $recipe = isset( $result['recipe'] ) ?
+        $result['recipe'] :
+        "Either I can't find that menu item, or there is no defined recipe for it. . Look at fajita dot t m three dot org for a full listing.";
+    return( $recipe );
+
 }
 
 ?>
